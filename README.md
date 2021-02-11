@@ -21,3 +21,49 @@ $ pip install -r requirements.txt
 $ python scan.py
 ```
 
+### Sample Output
+
+```
+---------------------------
+Current Settings
+Mode: file
+Value: package.json
+---------------------------
+
+
+
+Processing:  JSONStream
+Processing:  abbrev
+Processing:  codermak
+
+----------BROKEN----------
+Name: codermak
+Version: 5.7.1
+----------BROKEN----------
+
+Processing:  arshadkazmi42
+
+----------BROKEN----------
+Name: arshadkazmi42
+Version: 3.0.1
+----------BROKEN----------
+
+
+
+
+--------PACKAGES VULNERABLE TO TAKEOVER-----------
+[
+  {
+    "Name": "codermak",
+    "Version": "5.7.1",
+    "URL": "https://www.npmjs.com/package/codermak"
+  },
+  {
+    "Name": "arshadkazmi42",
+    "Version": "3.0.1",
+    "URL": "https://www.npmjs.com/package/arshadkazmi42"
+  }
+]
+--------------------------------------------------
+
+```

@@ -69,19 +69,26 @@ for value in data:
     for name, value in dependencies.items():
         print(f'Processing: ', name)
         try:
-            response = requests.get(f'{NPM_URL}{name}')
+            url = f'{NPM_URL}{name}'
+            response = requests.get(url)
             
             if (response.status_code == 404):
-                broken_dependencies.append(value)
+                broken_dependencies.append({
+                    'Name': name,
+                    'Version': value['version'],
+                    'URL': url
+                })
 
-                print('----------BROKEN----------')
+                print('\n----------BROKEN----------')
                 print(f'Name: {name}')
                 print(f'Version: {value["version"]}')
-                print('----------BROKEN----------')
+                print('----------BROKEN----------\n')
         except:
             print(f'Error processing: ', name)
 
         rand = randrange(5)
         time.sleep(rand)
 
-    print(str(broken_dependencies))
+    print('\n\n\n--------PACKAGES VULNERABLE TO TAKEOVER-----------')
+    print(json.dumps(broken_dependencies, indent=2, sort_keys=False))
+    print('--------------------------------------------------')
