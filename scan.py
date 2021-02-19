@@ -1,26 +1,25 @@
+import sys
 import requests
 import time
+
 from random import randrange
-import json
+
+
 
 NPM_URL = 'https://www.npmjs.com/package/'
-MODES = {
-    'FILE': 'file',
-    'URL': 'url'
-}
-
-
-# Change your Mode
-# MODES['FILE'] => If you want to scan files
-# MODES['URL'] => If you want to scan urls
-CURRENT_MODE = MODES['FILE']
-
-URLs = []                       # Comma separated string of URLs
-FILEs = ['package.json']        # Comma separated string of absolute file paths
 
 
 
-def _get_url_result(url):
+def _get_url_arg():
+    args = sys.argv
+
+    if len(args) < 2:
+        print('Missing URL!')
+        exit()
+
+    return args[1]
+
+def _call_api(url):
 
     response = requests.get(url)
 
@@ -30,65 +29,15 @@ def _get_url_result(url):
         
     return response.json()
 
-def _get_file_result(path):
 
-    with open(path) as f:
-        result = json.load(f)
-    
-    return result
+url = _get_url_arg()
+result = _call_api(url)
 
+dependencies = []
 
-data = []
-if CURRENT_MODE == MODES['URL']:
-    data = URLs
-elif CURRENT_MODE == MODES['FILE']:
-    data = FILEs
+if result and 'dependencies' in result:
+    dependencies = result['dependencies']
 
-for value in data:
-
-    print('\n\n')
-    print('---------------------------')
-    print('Current Settings')
-    print(f'Mode: {CURRENT_MODE}')
-    print(f'Value: {value}')
-    print('---------------------------')
-    print('\n\n')
-
-    if CURRENT_MODE == MODES['URL']:
-        result = _get_url_result(value)
-    elif CURRENT_MODE == MODES['FILE']:
-        result = _get_file_result(value)
-
-    name = result['name']
-    dependencies = {}
-    
-    if 'dependencies' in result:
-        dependencies = result['dependencies']
-
-    broken_dependencies = []
     for name, value in dependencies.items():
-        print(f'Processing: ', name)
-        try:
-            url = f'{NPM_URL}{name}'
-            response = requests.get(url)
-            
-            if (response.status_code == 404):
-                broken_dependencies.append({
-                    'Name': name,
-                    'Version': value['version'],
-                    'URL': url
-                })
+        print(f'{NPM_URL}{name}')
 
-                print('\n----------BROKEN----------')
-                print(f'Name: {name}')
-                print(f'Version: {value["version"]}')
-                print('----------BROKEN----------\n')
-        except:
-            print(f'Error processing: ', name)
-
-        rand = randrange(5)
-        time.sleep(rand)
-
-    print('\n\n\n--------PACKAGES VULNERABLE TO TAKEOVER-----------')
-    print(json.dumps(broken_dependencies, indent=2, sort_keys=False))
-    print('--------------------------------------------------')
