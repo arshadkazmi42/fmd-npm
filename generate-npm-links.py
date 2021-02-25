@@ -5,8 +5,7 @@ import time
 from random import randrange
 
 
-
-NPM_URL = 'https://www.npmjs.com/package/'
+NPM_URL = 'https://registry.npmjs.org/'
 
 
 
@@ -38,6 +37,7 @@ dependencies = []
 if result and 'dependencies' in result:
     dependencies = result['dependencies']
 
-    for name, value in dependencies.items():
-        print(f'{NPM_URL}{name}')
+    if isinstance(dependencies, dict):
+        for name, value in dependencies.items():
+            print(f'{NPM_URL}{name}')
 
